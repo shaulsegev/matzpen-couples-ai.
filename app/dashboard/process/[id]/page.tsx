@@ -31,33 +31,21 @@ export default function ProcessRoom() {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [commitment, setCommitment] = useState("");
   const [savingCommitment, setSavingCommitment] = useState(false);
-  
-  // States עבור מנגנון הדיוק
   const [isRefining, setIsRefining] = useState(false);
   const [refinementText, setRefinementText] = useState("");
 
   const fetchProcessData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      router.push("/auth");
-      return;
-    }
-
+    if (!session) { router.push("/auth"); return; }
     const { data, error } = await supabase.from("processes").select("*").eq("id", params.id).single();
-    if (error || !data) {
-      router.push("/dashboard");
-      return;
-    }
-
+    if (error || !data) { router.push("/dashboard"); return; }
     setProcess(data);
     setIsCreator(session.user.id === data.creator_id);
     if (data.ai_response) setAiResponse(data.ai_response);
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchProcessData();
-  }, [params.id]);
+  useEffect(() => { fetchProcessData(); }, [params.id]);
 
   const handleSaveCommitment = async () => {
     if (!commitment.trim()) return;
@@ -86,11 +74,7 @@ export default function ProcessRoom() {
       const data = await res.json();
       await supabase.from("processes").update({ ai_response: data.result }).eq("id", params.id);
       setAiResponse(data.result);
-    } catch (error) {
-      alert("שגיאה בניתוח.");
-    } finally {
-      setAnalyzing(false);
-    }
+    } catch (error) { alert("שגיאה בניתוח."); } finally { setAnalyzing(false); }
   };
 
   const parseSections = (text: string) => {
@@ -105,10 +89,10 @@ export default function ProcessRoom() {
   const renderFormattedText = (text: string) => {
     if (!text) return null;
     return text.split('\n').map((line, i) => (
-      <p key={i} className="mb-2">
+      <p key={i} className="mb-4">
         {line.split(/(\*\*.*?\*\*)/).map((part, j) => {
           if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={j} className="font-bold text-gray-950">{part.slice(2, -2)}</strong>;
+            return <strong key={j} className="font-semibold text-slate-800">{part.slice(2, -2)}</strong>;
           }
           return part;
         })}
@@ -116,7 +100,7 @@ export default function ProcessRoom() {
     ));
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-50">טוען חדר גישור...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-stone-50">מכין את מרחב הגישור...</div>;
   if (!process) return null;
 
   const sections = aiResponse ? parseSections(aiResponse) : { shared: "", creator: "", partner: "" };
@@ -125,60 +109,59 @@ export default function ProcessRoom() {
   const myPersonalInstructions = isCreator ? sections.creator : sections.partner;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 text-right" dir="rtl">
+    <div className="min-h-screen bg-stone-50 p-8 text-right" dir="rtl">
       <div className="max-w-4xl mx-auto pb-20">
-        <button onClick={() => router.push("/dashboard")} className="text-gray-400 hover:text-gray-700 mb-6 text-sm">← חזרה ללוח בקרה</button>
+        <button onClick={() => router.push("/dashboard")} className="text-slate-400 hover:text-slate-600 mb-8 transition-colors">← חזרה ללוח בקרה</button>
 
-        <header className="mb-10 border-b pb-6">
-          <h1 className="text-3xl font-bold text-gray-900">{process.topic}</h1>
+        <header className="mb-12 border-b border-stone-200 pb-10 text-center">
+          <h1 className="text-4xl font-light text-slate-800 mb-3 tracking-tight">חדר הגישור: {process.topic}</h1>
+          <p className="text-slate-500 font-light">הצלבת הגרסאות הושלמה. לפניכם תובנות שנכתבו עבורכם ברגישות.</p>
         </header>
 
         {aiResponse && (
-          <div className="space-y-8">
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-green-100">
-              <h2 className="text-xl font-bold text-green-800 mb-4">תמונת המצב המשותפת</h2>
-              <div className="text-gray-700 leading-relaxed text-base">{renderFormattedText(sections.shared)}</div>
+          <div className="space-y-10">
+            <div className="bg-white p-10 rounded-3xl shadow-lg shadow-slate-100 border border-slate-100">
+              <h2 className="text-2xl font-medium text-slate-700 mb-8 flex items-center gap-3">
+                <span className="w-2.5 h-2.5 bg-indigo-300 rounded-full"></span>
+                תמונת המצב המשותפת
+              </h2>
+              <div className="text-slate-600 leading-loose text-lg font-light">{renderFormattedText(sections.shared)}</div>
             </div>
 
-            <div className="bg-blue-50 p-8 rounded-2xl border border-blue-200">
-              <h3 className="text-lg font-bold text-blue-900 mb-3">המשימה האישית שלך</h3>
-              <div className="text-gray-800 text-sm leading-relaxed">{renderFormattedText(myPersonalInstructions)}</div>
+            <div className="bg-stone-100 p-10 rounded-3xl border border-stone-200">
+              <h3 className="text-xl font-medium text-slate-800 mb-6">המשימה האישית שלך</h3>
+              <div className="text-slate-700 leading-loose text-base font-light">{renderFormattedText(myPersonalInstructions)}</div>
             </div>
 
-            {/* מנגנון הדיוק החדש */}
             <div className="mt-8">
               {!isRefining ? (
-                <button onClick={() => setIsRefining(true)} className="text-blue-600 font-bold hover:underline text-sm">
+                <button onClick={() => setIsRefining(true)} className="text-indigo-400 font-medium hover:underline text-sm transition-all">
                   + בקש דיוק או הבהרה מהמגשר
                 </button>
               ) : (
-                <div className="bg-white p-6 rounded-xl border border-blue-200 shadow-sm">
-                  <h4 className="font-bold text-gray-900 mb-3">מה תרצה לדייק?</h4>
-                  <textarea 
-                    className="w-full border p-3 rounded-lg mb-4 text-sm"
-                    placeholder="כתוב מה מרגיש לא מדויק או מה תרצה שהמגשר יבהיר..."
-                    onChange={(e) => setRefinementText(e.target.value)}
-                  />
-                  <div className="flex gap-3">
-                    <button onClick={() => { handleAnalyze(refinementText); setIsRefining(false); }} className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold text-sm">שלח לדיוק מחדש</button>
-                    <button onClick={() => setIsRefining(false)} className="text-gray-500 text-sm">ביטול</button>
+                <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                  <h4 className="font-medium text-slate-800 mb-4">מה תרצה לדייק?</h4>
+                  <textarea className="w-full border border-slate-200 p-4 rounded-2xl mb-4 text-sm" placeholder="כתוב מה מרגיש לא מדויק..." onChange={(e) => setRefinementText(e.target.value)} />
+                  <div className="flex gap-4">
+                    <button onClick={() => { handleAnalyze(refinementText); setIsRefining(false); }} className="bg-slate-800 text-white px-8 py-3 rounded-xl font-medium text-sm hover:bg-slate-900">שלח לדיוק מחדש</button>
+                    <button onClick={() => setIsRefining(false)} className="text-slate-400 text-sm">ביטול</button>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 mt-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">סיכום הסכמות לשינוי</h2>
+            <div className="bg-white p-10 rounded-3xl shadow-lg shadow-slate-100 border border-slate-100 mt-12">
+              <h2 className="text-2xl font-medium text-slate-800 mb-8">סיכום הסכמות לשינוי</h2>
               {!myCommitment ? (
-                <div className="space-y-4">
-                  <textarea className="w-full border rounded-xl p-4 h-24 bg-gray-50 text-sm" placeholder="אני מתחייב ש..." onChange={(e) => setCommitment(e.target.value)} />
-                  <button onClick={handleSaveCommitment} disabled={savingCommitment} className="bg-gray-900 text-white px-6 py-2 rounded-lg font-bold text-sm">{savingCommitment ? "שומר..." : "נעל התחייבות"}</button>
+                <div className="space-y-6">
+                  <textarea className="w-full border border-slate-200 rounded-2xl p-5 h-28 bg-stone-50 text-sm" placeholder="אני מתחייב ש..." onChange={(e) => setCommitment(e.target.value)} />
+                  <button onClick={handleSaveCommitment} disabled={savingCommitment} className="bg-indigo-400 text-white px-10 py-4 rounded-2xl font-medium text-sm hover:bg-indigo-500 transition-all shadow-md">{savingCommitment ? "שומר..." : "נעל התחייבות"}</button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-green-50 p-6 rounded-xl border border-green-100"><p className="text-green-900 italic">"{myCommitment}"</p></div>
-                  <div className={`p-6 rounded-xl border ${partnerCommitment ? 'bg-green-50' : 'bg-gray-50'}`}>
-                    <p className="text-gray-600">{partnerCommitment ? `"${partnerCommitment}"` : "ממתין להתחייבות השני..."}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="bg-indigo-50 p-8 rounded-3xl border border-indigo-100"><p className="text-indigo-900 italic font-light">"{myCommitment}"</p></div>
+                  <div className={`p-8 rounded-3xl border ${partnerCommitment ? 'bg-stone-100' : 'bg-stone-50 border-stone-100'}`}>
+                    <p className="text-slate-500 font-light">{partnerCommitment ? `"${partnerCommitment}"` : "ממתין להתחייבות השני..."}</p>
                   </div>
                 </div>
               )}
@@ -187,9 +170,9 @@ export default function ProcessRoom() {
         )}
 
         {!aiResponse && (
-          <div className="bg-gray-900 text-white p-10 rounded-2xl text-center">
-            <h3 className="text-2xl font-bold mb-4">מוכנים לצאת לדרך?</h3>
-            <button onClick={() => handleAnalyze()} disabled={analyzing} className="bg-blue-600 px-8 py-3 rounded-lg font-bold">
+          <div className="bg-slate-800 text-white p-12 rounded-3xl text-center shadow-2xl">
+            <h3 className="text-3xl font-light mb-6">מרחב הגישור ממתין לניתוח</h3>
+            <button onClick={() => handleAnalyze()} disabled={analyzing} className="bg-indigo-400 px-10 py-4 rounded-2xl font-medium hover:bg-indigo-500 transition-all">
               {analyzing ? "מגשר..." : "התחל ניתוח קונפליקט משותף"}
             </button>
           </div>
