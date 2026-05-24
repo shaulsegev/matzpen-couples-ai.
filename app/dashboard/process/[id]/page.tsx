@@ -115,7 +115,7 @@ export default function ProcessRoom() {
 
         {/* לוגו */}
         <div className="flex justify-center mb-8">
-          <img src="/matzpen.png" alt="מצפן" className="w-24 h-24 object-contain opacity-90" />
+        <img src="/logo.png" alt="מצפן" className="w-24 h-24 object-contain opacity-90" />
         </div>
 
         <header className="mb-12 border-b border-stone-200 pb-10 text-center">
