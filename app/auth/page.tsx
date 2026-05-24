@@ -36,7 +36,7 @@ export default function Auth() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* הוספת הלוגו כאן */}
         <div className="flex justify-center mb-6">
-          <img src="/logo.png" alt="מצפן" className="w-24 h-24 object-contain" />
+          <img src="/logo.png" alt="מצפן" className="w-40 h-40 object-contain" />
         </div>
         
         <h2 className="text-center text-3xl font-extrabold text-gray-900">
