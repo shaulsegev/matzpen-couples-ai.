@@ -22,7 +22,6 @@ export default function Auth() {
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        // אישור אוטומטי מתבצע במסד הנתונים כפי שהגדרנו קודם
         window.location.href = "/dashboard";
       }
     } catch (error: any) {
@@ -35,7 +34,12 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 text-right" dir="rtl">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        {/* הוספת הלוגו כאן */}
+        <div className="flex justify-center mb-6">
+          <img src="/logo.png" alt="מצפן" className="w-24 h-24 object-contain" />
+        </div>
+        
+        <h2 className="text-center text-3xl font-extrabold text-gray-900">
           {isLogin ? "ברוך שובך למצפן" : "יצירת חשבון חדש"}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
