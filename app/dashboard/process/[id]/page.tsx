@@ -113,6 +113,11 @@ export default function ProcessRoom() {
       <div className="max-w-4xl mx-auto pb-20">
         <button onClick={() => router.push("/dashboard")} className="text-slate-400 hover:text-slate-600 mb-8 transition-colors">← חזרה ללוח בקרה</button>
 
+        {/* לוגו */}
+        <div className="flex justify-center mb-8">
+          <img src="/matzpen.png" alt="מצפן" className="w-24 h-24 object-contain opacity-90" />
+        </div>
+
         <header className="mb-12 border-b border-stone-200 pb-10 text-center">
           <h1 className="text-4xl font-light text-slate-800 mb-3 tracking-tight">חדר הגישור: {process.topic}</h1>
           <p className="text-slate-500 font-light">הצלבת הגרסאות הושלמה. לפניכם תובנות שנכתבו עבורכם ברגישות.</p>
