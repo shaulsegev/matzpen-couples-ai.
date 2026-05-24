@@ -2,8 +2,18 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-900 p-4">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-900 p-4" dir="rtl">
       <div className="max-w-2xl text-center space-y-6">
+        
+        {/* אלמנט הלוגו המרכזי */}
+        <div className="flex justify-center mb-4">
+          <img 
+            src="/logo.png" 
+            alt="לוגו מצפן" 
+            className="w-40 h-40 object-contain opacity-95"
+          />
+        </div>
+
         <div className="space-y-2">
           <h1 className="text-5xl font-bold tracking-tight text-blue-900">
             מצפן
