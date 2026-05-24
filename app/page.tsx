@@ -10,7 +10,7 @@ export default function Home() {
           <img 
             src="/logo.png" 
             alt="לוגו מצפן" 
-            className="w-40 h-40 object-contain opacity-95"
+            className="w-60 h-60 object-contain opacity-95"
           />
         </div>
 
